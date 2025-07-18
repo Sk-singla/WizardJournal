@@ -1,4 +1,4 @@
-package com.samapps.wizardjournal.ui.Feed
+package com.samapps.wizardjournal.ui.feed
 
 import androidx.compose.runtime.mutableStateListOf
 import androidx.lifecycle.ViewModel

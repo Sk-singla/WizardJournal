@@ -14,8 +14,8 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
-import com.samapps.wizardjournal.ui.Feed.FeedScreen
-import com.samapps.wizardjournal.ui.Feed.FeedViewModel
+import com.samapps.wizardjournal.ui.feed.FeedScreen
+import com.samapps.wizardjournal.ui.feed.FeedViewModel
 import com.samapps.wizardjournal.ui.theme.WizardJournalTheme
 import com.samapps.wizardjournal.ui.wip_journal.WipJournal
 import com.samapps.wizardjournal.ui.wip_journal.WipJournalViewModel

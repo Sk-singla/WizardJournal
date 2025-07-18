@@ -17,14 +17,14 @@ import androidx.compose.animation.core.tween
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Call
 import androidx.compose.material.icons.filled.Done
+import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -34,7 +34,7 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -52,6 +52,9 @@ import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.navigation.NavHostController
 import com.samapps.wizardjournal.FeedScreen
+import com.samapps.wizardjournal.UiState
+import com.samapps.wizardjournal.audio.record.AndroidAudioRecorder
+import java.io.File
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -63,12 +66,11 @@ fun WipJournal(
 ) {
     val lifecycleOwner = LocalLifecycleOwner.current
     val context = LocalContext.current
+    val uiState by viewModel.uiState.collectAsState()
 
     var showRecordingModal by remember { mutableStateOf(false) }
     var isRecording by remember { mutableStateOf(false) }
     var transcribedText by remember { mutableStateOf("") }
-    val sheetState = rememberModalBottomSheetState()
-
     val speechRecognizer = remember { SpeechRecognizer.createSpeechRecognizer(context) }
 
     val requestPermissionLauncher = rememberLauncherForActivityResult(
@@ -76,20 +78,20 @@ fun WipJournal(
     ) { isGranted: Boolean ->
         if (isGranted) {
             showRecordingModal = true
-            startRecording(
-                context,
-                speechRecognizer,
-                { isRecording = it },
-                { transcribedText = it },
-                onFinalResults = { finalResult ->
-                    viewModel.content += " $finalResult" // Append final result to existing content
-                    transcribedText = "" // Clear transcribed text after processing
-                    showRecordingModal = false // Hide modal after recording finishes
-                }
-            )
+//            startRecording(
+//                context,
+//                speechRecognizer,
+//                { isRecording = it },
+//                { transcribedText = it },
+//                onFinalResults = { finalResult ->
+//                    viewModel.content += " $finalResult" // Append final result to existing content
+//                    transcribedText = "" // Clear transcribed text after processing
+//                }
+//            )
         } else {
             // Handle permission denial
             // You might want to show a Snackbar or a dialog
+
         }
     }
 
@@ -176,35 +178,16 @@ fun WipJournal(
         }
 
         if (showRecordingModal) {
-            Dialog(onDismissRequest = {
+            AudioRecorderDialog { audioFile ->
                 showRecordingModal = false
-                // Optionally stop recording if the dialog is dismissed externally
-                if (isRecording) {
-                    stopRecording(speechRecognizer)
-                    isRecording = false
-                }
-            }) {
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.Center
-                ) {
-                    val infiniteTransition = rememberInfiniteTransition(label = "recording_animation")
-                    val alpha by infiniteTransition.animateFloat(
-                        initialValue = 0.3f,
-                        targetValue = 1f,
-                        animationSpec = infiniteRepeatable(
-                            animation = tween(1000, easing = LinearEasing),
-                            repeatMode = RepeatMode.Reverse
-                        ), label = "recording_alpha"
-                    )
-                    Icon(Icons.Filled.Call, contentDescription = "Recording", modifier = Modifier.size(48.dp).alpha(alpha))
-                    Spacer(modifier = Modifier.height(16.dp))
-                    Text(if (transcribedText.isNotBlank()) transcribedText else "Listening...", style = MaterialTheme.typography.bodyLarge)
+                if (audioFile != null) {
+                    viewModel.sendPrompt(context.contentResolver, audioFile)
                 }
             }
+        }
+
+        if (uiState is UiState.Loading){
+            CircularProgressIndicator()
         }
     }
 
@@ -228,13 +211,73 @@ fun WipJournal(
             speechRecognizer.destroy()
         }
     }
+}
 
-    LaunchedEffect(showRecordingModal, isRecording) {
-        if (!showRecordingModal && isRecording) {
-            stopRecording(speechRecognizer)
-            isRecording = false
+@Composable
+private fun AudioRecorderDialog(
+    onStop: (File?) -> Unit
+) {
+    val context = LocalContext.current
+    val recorder = remember {
+        AndroidAudioRecorder(context)
+    }
+    var audioFile: File? = null
+
+    fun handleDiscardRecording() {
+        recorder.stop()
+        onStop(null)
+    }
+
+    fun handleSaveAudioRecording() {
+        recorder.stop()
+        onStop(audioFile)
+    }
+
+    DisposableEffect(Unit) {
+        recorder.start(File.createTempFile("temp_audio_", ".m4a", context.cacheDir).also {
+            audioFile = it
+        })
+
+        onDispose{}
+    }
+
+    Dialog(onDismissRequest = { /* Don't dismiss on outside click */ }) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
+        ) {
+            val infiniteTransition = rememberInfiniteTransition(label = "recording_animation")
+            val alpha by infiniteTransition.animateFloat(
+                initialValue = 0.3f,
+                targetValue = 1f,
+                animationSpec = infiniteRepeatable(
+                    animation = tween(1000, easing = LinearEasing),
+                    repeatMode = RepeatMode.Reverse
+                ), label = "recording_alpha"
+            )
+            Icon(Icons.Filled.Call, contentDescription = "Recording", modifier = Modifier.size(48.dp).alpha(alpha))
+            Spacer(modifier = Modifier.height(24.dp))
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceEvenly
+            ) {
+                Button(onClick = {
+                    handleDiscardRecording()
+                }) {
+                    Text("Discard")
+                }
+                Button(onClick = {
+                    handleSaveAudioRecording()
+                }) {
+                    Text("Done")
+                }
+            }
         }
     }
+
 }
 
 private fun startRecording(
@@ -251,6 +294,8 @@ private fun startRecording(
             putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.current.language)
             putExtra(RecognizerIntent.EXTRA_PARTIAL_RESULTS, true) // Enable partial results
             putExtra(RecognizerIntent.EXTRA_PROMPT, "Listening...") // Optional: text prompt for user
+            // Keep listening until stopListening() is called
+            putExtra(RecognizerIntent.EXTRA_SPEECH_INPUT_COMPLETE_SILENCE_LENGTH_MILLIS, Long.MAX_VALUE)
         }
         println("RecognizerIntent created with language: ${Locale.current.language}")
 
@@ -277,7 +322,10 @@ private fun startRecording(
 
             override fun onEndOfSpeech() {
                 println("onEndOfSpeech: User stopped speaking")
-                onRecordingStateChange(false)
+                // Do not change recording state here; let it continue until explicitly stopped
+                // onRecordingStateChange(false)
+//                 Restart listening if not explicitly stopped by user
+//                 speechRecognizer.startListening(recognizerIntent)
             }
 
             override fun onError(error: Int) {
@@ -299,6 +347,10 @@ private fun startRecording(
                 }
                 // Log or display errorMessage
                 println("onError: Error message: $errorMessage")
+                // If it's a timeout error and we want continuous recording, try restarting.
+                if (error == SpeechRecognizer.ERROR_SPEECH_TIMEOUT || error == SpeechRecognizer.ERROR_NO_MATCH) {
+                    speechRecognizer.startListening(recognizerIntent) // Attempt to restart listening
+                }
                 onFinalResults("") // Clear any previous results on error
             }
 
