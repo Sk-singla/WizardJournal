@@ -23,6 +23,8 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -33,6 +35,8 @@ import com.samapps.wizardjournal.EditJournalScreen
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FeedScreen(navController: NavHostController, viewModel: FeedViewModel, modifier: Modifier = Modifier) {
+    val journals by viewModel.journals.collectAsState(emptyList())
+
     fun handleCreateNewJournal() {
         navController.navigate(CreateNewJournalScreen)
     }
@@ -51,7 +55,7 @@ fun FeedScreen(navController: NavHostController, viewModel: FeedViewModel, modif
             )
         },
         floatingActionButton = {
-            if (viewModel.journals.isNotEmpty()){
+            if (journals.isNotEmpty()){
                 FloatingActionButton(
                     onClick = {
                         handleCreateNewJournal()
@@ -66,7 +70,7 @@ fun FeedScreen(navController: NavHostController, viewModel: FeedViewModel, modif
         }
     ) { values ->
 
-        if (viewModel.journals.isEmpty()){
+        if (journals.isEmpty()){
             Column(
                 modifier = Modifier.fillMaxSize().padding(values),
                 horizontalAlignment = Alignment.CenterHorizontally,
@@ -91,7 +95,7 @@ fun FeedScreen(navController: NavHostController, viewModel: FeedViewModel, modif
                 modifier = Modifier.padding(values).padding(16.dp),
                 verticalArrangement = Arrangement.spacedBy(8.dp) // Add spacing between items
             ) {
-                items(viewModel.journals){ journal ->
+                items(journals){ journal ->
                     Column(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -102,7 +106,7 @@ fun FeedScreen(navController: NavHostController, viewModel: FeedViewModel, modif
                             .padding(16.dp)
                             .clickable {
                                 navController.navigate(
-                                    EditJournalScreen(journal.id)
+                                    EditJournalScreen(journal.id.toString())
                                 )
                             }
                     ) {
@@ -111,7 +115,7 @@ fun FeedScreen(navController: NavHostController, viewModel: FeedViewModel, modif
                         )
                         Spacer(modifier = Modifier.height(4.dp)) // Add spacing within item
                         Text(
-                            text = journal.lastModified.toString()
+                            text = journal.modifiedTimestamp.toString()
                         )
                     }
                 }

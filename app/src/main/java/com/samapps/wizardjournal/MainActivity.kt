@@ -6,6 +6,8 @@ import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -14,12 +16,15 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
+import com.samapps.wizardjournal.feature_journal.presentation.journal_editor.manual_editor.ManualJournalEditorScreen
+import com.samapps.wizardjournal.feature_journal.presentation.journal_home.JournalHomeScreen
 import com.samapps.wizardjournal.ui.feed.FeedScreen
 import com.samapps.wizardjournal.ui.feed.FeedViewModel
 import com.samapps.wizardjournal.ui.theme.WizardJournalTheme
 import com.samapps.wizardjournal.ui.wip_journal.WipJournal
 import com.samapps.wizardjournal.ui.wip_journal.WipJournalViewModel
 import kotlinx.serialization.Serializable
+import org.koin.androidx.viewmodel.ext.android.getViewModel
 
 @Serializable
 object FeedScreen
@@ -45,23 +50,29 @@ class MainActivity : ComponentActivity() {
         ) {
 
           val navController = rememberNavController()
-          var feedViewModel = viewModel<FeedViewModel>()
+          var feedViewModel = getViewModel<FeedViewModel>()
+          val journals by feedViewModel.journals.collectAsState(emptyList())
+
 
           NavHost(
             navController = navController,
             startDestination = FeedScreen
           ) {
             composable<FeedScreen> {
-              FeedScreen(navController = navController, viewModel = feedViewModel)
+              JournalHomeScreen(navController = navController)
             }
             composable<CreateNewJournalScreen> {
-              WipJournal(
-                navController = navController,
-                viewModel = viewModel(),
-                saveJournal = { title, content ->
-                  feedViewModel.createNewJournal(title, content)
-                }
+              ManualJournalEditorScreen(
+                navController = navController
               )
+
+//              WipJournal(
+//                navController = navController,
+//                viewModel = viewModel(),
+//                saveJournal = { title, content ->
+//                  feedViewModel.createNewJournal(title, content)
+//                }
+//              )
             }
             composable<EditJournalScreen> {
               val args = it.toRoute<EditJournalScreen>()
@@ -69,7 +80,7 @@ class MainActivity : ComponentActivity() {
                 viewModel = viewModel(factory = object : ViewModelProvider.Factory {
                   override fun <T : ViewModel> create(modelClass: Class<T>): T {
                     return WipJournalViewModel(
-                      journal = feedViewModel.journals.find { it.id == args.journalId }
+                      journal = journals.find { it.id.toString() == args.journalId }
                     ) as T
                   }
                 }
