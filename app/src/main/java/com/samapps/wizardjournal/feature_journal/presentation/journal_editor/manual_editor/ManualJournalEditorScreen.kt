@@ -29,7 +29,8 @@ fun ManualJournalEditorScreen(
     viewModel: JournalEditorViewModel = koinViewModel()
 ) {
 
-    val state by viewModel.manualEditorState.collectAsState()
+    val journalTitle by viewModel.journalTitle.collectAsState()
+    val journalContent by viewModel.journalContent.collectAsState()
 
     Scaffold(
         modifier = modifier,
@@ -53,7 +54,7 @@ fun ManualJournalEditorScreen(
                 .fillMaxSize()
         ) {
             TextField(
-                value = state.title,
+                value = journalTitle,
                 onValueChange = { viewModel.onManualEditorEvent(ManualEditorEvent.TitleChanged(it)) },
                 placeholder = { Text("Title", style = MaterialTheme.typography.headlineSmall) },
                 colors = TextFieldDefaults.colors(
@@ -68,7 +69,7 @@ fun ManualJournalEditorScreen(
                 modifier = Modifier.fillMaxWidth()
             )
             TextField(
-                value = state.content,
+                value = journalContent,
                 onValueChange = { viewModel.onManualEditorEvent(ManualEditorEvent.ContentChanged(it)) },
                 placeholder = { Text("Journal", style = MaterialTheme.typography.bodyLarge) },
                 colors = TextFieldDefaults.colors(

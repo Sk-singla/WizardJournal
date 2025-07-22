@@ -1,9 +1,11 @@
 package com.samapps.wizardjournal.feature_journal.presentation.journal_home
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -11,7 +13,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Button
-import androidx.compose.material3.Card
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -19,17 +20,15 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
-import com.samapps.wizardjournal.CreateNewJournalScreen
+import com.samapps.wizardjournal.app.Routes
 import com.samapps.wizardjournal.feature_journal.domain.model.JournalEntity
+import com.samapps.wizardjournal.feature_journal.presentation.journal_home.components.JournalCard
 import org.koin.androidx.compose.koinViewModel
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
 
 @Composable
 fun JournalHomeScreen(
@@ -39,10 +38,8 @@ fun JournalHomeScreen(
 ) {
 
     val state = viewModel.state.collectAsState()
-    fun handleCreateNewJournal () {
-        println("Create new journal button clicked")
-        navController.navigate(CreateNewJournalScreen)
-
+    fun handleCreateNewJournal() {
+        navController.navigate(Routes.CreateNewJournal)
     }
 
     fun handleEditJournal() {
@@ -65,11 +62,21 @@ fun JournalHomeScreen(
 }
 
 @Composable
-fun EmptyJournalScreen(modifier: Modifier = Modifier, onCreateNewJournal: () -> Unit) {
+private fun EmptyJournalScreen(modifier: Modifier = Modifier, onCreateNewJournal: () -> Unit) {
 
-    Scaffold { paddingValues ->
-        Column(modifier = modifier.padding(paddingValues)) {
-            Text(text = "No Journals Found")
+    Scaffold(modifier = modifier) { paddingValues ->
+        Column(
+            modifier = Modifier
+                .padding(paddingValues)
+                .fillMaxSize(),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
+        ) {
+            Text(
+                text = "No Journals Found",
+                style = MaterialTheme.typography.headlineSmall,
+                fontWeight = FontWeight.Bold
+            )
             Spacer(modifier = Modifier.height(16.dp))
             Button(onClick = onCreateNewJournal) {
                 Text(text = "Create New Journal")
@@ -79,7 +86,7 @@ fun EmptyJournalScreen(modifier: Modifier = Modifier, onCreateNewJournal: () -> 
 }
 
 @Composable
-fun JournalsListScreen(
+private fun JournalsListScreen(
     modifier: Modifier = Modifier,
     journals: List<JournalEntity>,
     onJournalClick: (JournalEntity) -> Unit,
@@ -101,33 +108,6 @@ fun JournalsListScreen(
                     modifier = Modifier.fillMaxWidth()
                 )
             }
-        }
-    }
-}
-
-@Composable
-fun JournalCard(modifier: Modifier = Modifier, journal: JournalEntity, onClick: () -> Unit) {
-    val dateFormat = SimpleDateFormat("dd MMM yyyy", Locale.getDefault())
-    val dateString = dateFormat.format(Date(journal.date))
-
-    Card(
-        modifier = modifier
-            .padding(8.dp)
-            .clickable { onClick() }
-    ) {
-        Column(modifier = Modifier.padding(16.dp)) {
-            Text(
-                text = journal.title,
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.Bold
-            )
-            Text(text = dateString, style = MaterialTheme.typography.bodySmall)
-            Spacer(modifier = Modifier.height(8.dp))
-            Text(
-                text = journal.content,
-                style = MaterialTheme.typography.bodyMedium,
-                maxLines = 2,
-                overflow = TextOverflow.Ellipsis)
         }
     }
 }

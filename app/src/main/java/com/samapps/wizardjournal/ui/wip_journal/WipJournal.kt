@@ -51,8 +51,8 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.navigation.NavHostController
-import com.samapps.wizardjournal.FeedScreen
 import com.samapps.wizardjournal.UiState
+import com.samapps.wizardjournal.app.Routes
 import com.samapps.wizardjournal.audio.record.AndroidAudioRecorder
 import java.io.File
 
@@ -117,8 +117,8 @@ fun WipJournal(
                         modifier = Modifier
                             .padding(end = 16.dp)
                             .clickable {
-                                navController.navigate(FeedScreen) {
-                                    popUpTo(FeedScreen) {
+                                navController.navigate(Routes.JournalHome) {
+                                    popUpTo(Routes.JournalHome) {
                                         inclusive = true
                                     }
                                 }

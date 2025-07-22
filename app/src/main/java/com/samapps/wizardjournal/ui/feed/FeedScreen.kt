@@ -29,8 +29,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
-import com.samapps.wizardjournal.CreateNewJournalScreen
-import com.samapps.wizardjournal.EditJournalScreen
+import com.samapps.wizardjournal.app.Routes
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -38,7 +37,7 @@ fun FeedScreen(navController: NavHostController, viewModel: FeedViewModel, modif
     val journals by viewModel.journals.collectAsState(emptyList())
 
     fun handleCreateNewJournal() {
-        navController.navigate(CreateNewJournalScreen)
+        navController.navigate(Routes.CreateNewJournal)
     }
 
     Scaffold(
@@ -106,7 +105,7 @@ fun FeedScreen(navController: NavHostController, viewModel: FeedViewModel, modif
                             .padding(16.dp)
                             .clickable {
                                 navController.navigate(
-                                    EditJournalScreen(journal.id.toString())
+                                    Routes.EditJournal(journal.id)
                                 )
                             }
                     ) {

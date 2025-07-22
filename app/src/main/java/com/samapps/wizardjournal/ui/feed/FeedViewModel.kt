@@ -39,7 +39,7 @@ class FeedViewModel(
         }
     }
 
-    fun editJournal(id: String, title: String, content: String) {
+    fun editJournal(id: Int, title: String, content: String) {
         if (title.isBlank() && content.isBlank()) return
 
 //        val index = journals.indexOfFirst { it.id == id }
@@ -48,7 +48,7 @@ class FeedViewModel(
 //        }
         viewModelScope.launch {
             useCases.createJournal(JournalEntity(
-                id = 1,
+                id = id,
                 title = title,
                 content = content,
                 date = System.currentTimeMillis(),

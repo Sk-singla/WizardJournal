@@ -16,27 +16,14 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
-import com.samapps.wizardjournal.feature_journal.presentation.journal_editor.manual_editor.ManualJournalEditorScreen
+import com.samapps.wizardjournal.app.Routes
+import com.samapps.wizardjournal.feature_journal.presentation.journal_editor.manual_editor.RecordNewJournalScreen
 import com.samapps.wizardjournal.feature_journal.presentation.journal_home.JournalHomeScreen
-import com.samapps.wizardjournal.ui.feed.FeedScreen
 import com.samapps.wizardjournal.ui.feed.FeedViewModel
 import com.samapps.wizardjournal.ui.theme.WizardJournalTheme
 import com.samapps.wizardjournal.ui.wip_journal.WipJournal
 import com.samapps.wizardjournal.ui.wip_journal.WipJournalViewModel
-import kotlinx.serialization.Serializable
 import org.koin.androidx.viewmodel.ext.android.getViewModel
-
-@Serializable
-object FeedScreen
-
-@Serializable
-object CreateNewJournalScreen
-
-@Serializable
-data class EditJournalScreen(
-  val journalId: String
-)
-
 
 class MainActivity : ComponentActivity() {
 
@@ -56,15 +43,13 @@ class MainActivity : ComponentActivity() {
 
           NavHost(
             navController = navController,
-            startDestination = FeedScreen
+            startDestination = Routes.JournalHome
           ) {
-            composable<FeedScreen> {
+            composable<Routes.JournalHome> {
               JournalHomeScreen(navController = navController)
             }
-            composable<CreateNewJournalScreen> {
-              ManualJournalEditorScreen(
-                navController = navController
-              )
+            composable<Routes.CreateNewJournal> {
+              RecordNewJournalScreen()
 
 //              WipJournal(
 //                navController = navController,
@@ -74,13 +59,13 @@ class MainActivity : ComponentActivity() {
 //                }
 //              )
             }
-            composable<EditJournalScreen> {
-              val args = it.toRoute<EditJournalScreen>()
+            composable<Routes.EditJournal> {
+              val args = it.toRoute<Routes.EditJournal>()
               WipJournal(
                 viewModel = viewModel(factory = object : ViewModelProvider.Factory {
                   override fun <T : ViewModel> create(modelClass: Class<T>): T {
                     return WipJournalViewModel(
-                      journal = journals.find { it.id.toString() == args.journalId }
+                      journal = journals.find { it.id == args.journalId }
                     ) as T
                   }
                 }
