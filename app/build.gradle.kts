@@ -75,4 +75,5 @@ dependencies {
     ksp(libs.room.compiler)
 
     implementation(libs.material.extended.icons)
+    implementation(libs.accompanist.permissions)
 }
