@@ -82,10 +82,6 @@ fun RecordNewJournalScreen(
         }
     }
 
-    LaunchedEffect(key1 = true) {
-        viewModel.clearStatesOnJournalUpdate()
-    }
-
     RecordNewJournalInternal(
         modifier = modifier,
         snackbarHostState = snackbarHostState,

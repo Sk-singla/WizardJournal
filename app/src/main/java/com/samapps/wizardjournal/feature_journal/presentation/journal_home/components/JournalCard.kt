@@ -1,11 +1,13 @@
 package com.samapps.wizardjournal.feature_journal.presentation.journal_home.components
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardColors
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -13,6 +15,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import com.samapps.wizardfeature_presentation.util.customBackground
 import com.samapps.wizardjournal.feature_journal.domain.model.JournalEntity
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -26,9 +29,12 @@ fun JournalCard(modifier: Modifier = Modifier, journal: JournalEntity, onClick: 
     Card(
         modifier = modifier
             .padding(8.dp)
-            .clickable { onClick() }
+            .clickable { onClick() },
     ) {
-        Column(modifier = Modifier.padding(16.dp)) {
+        Column(modifier = Modifier
+            .customBackground(journal.backgroundInfo)
+            .padding(16.dp)
+        ) {
             Text(
                 text = journal.title,
                 style = MaterialTheme.typography.titleMedium,

@@ -10,6 +10,7 @@ import com.samapps.wizardjournal.BuildConfig
 import com.samapps.wizardjournal.feature_journal.domain.model.AiJournalResponse
 import com.samapps.wizardjournal.feature_journal.domain.model.BackgroundInfo
 import com.samapps.wizardjournal.feature_journal.domain.model.BackgroundType
+import com.samapps.wizardjournal.feature_journal.domain.model.CustomColors
 import com.samapps.wizardjournal.feature_journal.domain.model.InvalidJournalException
 import com.samapps.wizardjournal.feature_journal.domain.model.JournalEntity
 import com.samapps.wizardjournal.feature_journal.domain.model.JournalTheme
@@ -100,7 +101,10 @@ class JournalEditorViewModel(
                                 journal!!.copy(
                                     title = _journalTitle.value,
                                     content = _journalContent.value,
-                                    modifiedTimestamp = System.currentTimeMillis()
+                                    modifiedTimestamp = System.currentTimeMillis(),
+                                    backgroundInfo = BackgroundInfo(
+                                        BackgroundType.SOLID_COLOR
+                                    )
                                 )
                             )
                         }
@@ -166,8 +170,8 @@ class JournalEditorViewModel(
                 Schema.obj(
                     "backgroundInfo", "background info",
                     Schema.enum("type", "background type", BackgroundType.entries.map { it.toString() }),
-                    Schema.int("primaryColor", "hex value"),
-                    Schema.int("secondaryColor", "hex value, nullable"),
+                    Schema.enum("primaryColor", "primary color", CustomColors.entries.map { it.toString() }),
+                    Schema.enum("secondaryColor", "secondary color if gradient type, null if not applicable", CustomColors.entries.map { it.toString() }),
                     Schema.double("gradientAngle", "angle, nullable")
                 )
             )
@@ -185,7 +189,7 @@ class JournalEditorViewModel(
             - Use elements from the world of ${theme.displayName}. ${theme.description}
             - Map real-world elements to equivalents in this theme.
             - Keep the journal's core message and emotion.
-            - Suggest a matching journal background: type and color(s).
+            - Suggest a matching journal background: type and color(s). - It should reflect theme selected by user and user's story.
     
         Respond ONLY in JSON in this format:
         {"title":"...","content":"...","backgroundInfo":{"type":"...","primaryColor":...,"secondaryColor":...,"gradientAngle":...}}

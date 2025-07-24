@@ -1,5 +1,6 @@
 package com.samapps.wizardjournal.feature_journal.presentation.journal_details
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.IntrinsicSize
@@ -26,6 +27,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
+import com.samapps.wizardfeature_presentation.util.customBackground
 import com.samapps.wizardjournal.app.Routes
 import com.samapps.wizardjournal.feature_journal.domain.model.BackgroundInfo
 import com.samapps.wizardjournal.feature_journal.domain.model.BackgroundType
@@ -101,6 +103,7 @@ private fun JournalDetailsInternal(
     ) { paddingValues ->
         Column(
             modifier = Modifier
+                .customBackground(journal.backgroundInfo)
                 .padding(paddingValues)
                 .fillMaxSize()
                 .verticalScroll(rememberScrollState())
@@ -115,7 +118,7 @@ private fun JournalDetailsInternal(
                 textAlign = TextAlign.Center,
                 modifier = Modifier.fillMaxWidth()
             )
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(16.dp))
             Text(
                 text = journal.content,
                 style = MaterialTheme.typography.bodyLarge,
