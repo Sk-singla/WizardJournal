@@ -1,6 +1,5 @@
 package com.samapps.wizardjournal.feature_journal.presentation.journal_home
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -13,11 +12,13 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Button
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
@@ -27,6 +28,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.samapps.wizardjournal.app.Routes
 import com.samapps.wizardjournal.feature_journal.domain.model.JournalEntity
+import com.samapps.wizardjournal.feature_journal.presentation.components.CustomTopAppBar
 import com.samapps.wizardjournal.feature_journal.presentation.journal_home.components.JournalCard
 import org.koin.androidx.compose.koinViewModel
 
@@ -39,7 +41,7 @@ fun JournalHomeScreen(
 
     val state = viewModel.state.collectAsState()
     fun handleCreateNewJournal() {
-        navController.navigate(Routes.CreateNewJournal)
+        navController.navigate(Routes.CreateNewJournalByRecording)
     }
 
     fun handleEditJournal() {
@@ -64,7 +66,13 @@ fun JournalHomeScreen(
 @Composable
 private fun EmptyJournalScreen(modifier: Modifier = Modifier, onCreateNewJournal: () -> Unit) {
 
-    Scaffold(modifier = modifier) { paddingValues ->
+    Scaffold(
+        modifier = modifier,
+        topBar = {
+            CustomTopAppBar(
+                title = "Wizournal"
+            )
+        }) { paddingValues ->
         Column(
             modifier = Modifier
                 .padding(paddingValues)
@@ -94,6 +102,11 @@ private fun JournalsListScreen(
 ) {
     Scaffold(
         modifier = modifier,
+        topBar = {
+            CustomTopAppBar(
+                title = "Wizournal"
+            )
+        },
         floatingActionButton = {
             FloatingActionButton(onClick = { onCreateNewJournal() }) {
                 Icon(Icons.Filled.Add, "Add new journal")

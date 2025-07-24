@@ -26,9 +26,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
@@ -37,23 +35,33 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.material.icons.outlined.Mic
 import androidx.compose.material.icons.outlined.MicOff
+import androidx.compose.material3.Button
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.material3.SnackbarHostState
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.res.painterResource
+import androidx.navigation.NavHostController
+import com.samapps.wizardjournal.R
+import com.samapps.wizardjournal.app.Routes
 import com.samapps.wizardjournal.app.utils.rememberSpeechRecognizer
+import com.samapps.wizardjournal.feature_journal.presentation.journal_editor.JournalEditorViewModel
 import kotlinx.coroutines.launch
+import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun RecordNewJournalScreen(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    navController: NavHostController,
+    viewModel: JournalEditorViewModel = koinViewModel()
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
-
-    var capturedText by remember { mutableStateOf("") }
     val speechRecognizer = rememberSpeechRecognizer(
         onResult = { text ->
-            capturedText += if (capturedText.isEmpty()) text else " $text"
+            viewModel.onRecordNewJournalEvent(
+                RecordNewJournalEvent.CaptureText(text)
+            )
         },
         onError = { error ->
             scope.launch {
@@ -62,7 +70,7 @@ fun RecordNewJournalScreen(
         }
     )
     val recordAudioPermissionState = speechRecognizer.recordAudioPermissionState
-
+    val capturedText by viewModel.journalContent.collectAsState()
 
     fun handleToggleRecording() {
         if (speechRecognizer.isRecording) {
@@ -72,6 +80,33 @@ fun RecordNewJournalScreen(
         }
     }
 
+    RecordNewJournalInternal(
+        modifier = modifier,
+        capturedText = capturedText,
+        isRecording = speechRecognizer.isRecording,
+        isRecordingPermissionGranted = recordAudioPermissionState.isGranted,
+        isRecordingPermissionPermanentlyDenied = recordAudioPermissionState.isPermanentlyDenied,
+        onToggleRecording = ::handleToggleRecording,
+        onCreateManually = {
+            navController.navigate(Routes.CreateNewJournalManualEditing)
+        },
+        onSave = {
+            navController.navigate(Routes.CreateNewJournalThemeSelection)
+        }
+    )
+}
+
+@Composable
+private fun RecordNewJournalInternal(
+    modifier: Modifier = Modifier,
+    capturedText: String,
+    isRecording: Boolean,
+    isRecordingPermissionGranted: Boolean,
+    isRecordingPermissionPermanentlyDenied: Boolean,
+    onToggleRecording: () -> Unit,
+    onCreateManually: () -> Unit,
+    onSave: () -> Unit
+){
     Scaffold(
         modifier = modifier,
     ) { paddingValues ->
@@ -91,20 +126,20 @@ fun RecordNewJournalScreen(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Text(
-                    text = if (speechRecognizer.isRecording) "Listening..." else "Speak your story...",
+                    text = if (isRecording) "Listening..." else "Speak your story...",
                     style = MaterialTheme.typography.headlineMedium,
                     fontWeight = FontWeight.Bold
                 )
                 Text(
-                    text = if (speechRecognizer.isRecording) "Tap to stop recording" else "Tap the microphone to start recording",
+                    text = if (isRecording) "Tap to stop recording" else "Tap the microphone to start recording",
                 )
 
-                if (!recordAudioPermissionState.isGranted) {
+                if (!isRecordingPermissionGranted) {
                     Spacer(modifier = Modifier.padding(8.dp))
                     Text(
-                        text = if (recordAudioPermissionState.isPermanentlyDenied) "Audio recording permission was declined. Please enable it in app settings to use this feature." else "Audio recording permission is required to use this feature. Please grant the permission.",
+                        text = if (isRecordingPermissionPermanentlyDenied) "Audio recording permission was declined. Please enable it in app settings to use this feature." else "Audio recording permission is required to use this feature. Please grant the permission.",
                         color = MaterialTheme.colorScheme.error,
-                        style = MaterialTheme.typography.bodyMedium.copy(textAlign = TextAlign.Center)
+                        textAlign = TextAlign.Center
                     )
                 }
 
@@ -117,17 +152,17 @@ fun RecordNewJournalScreen(
                             brush = Brush.linearGradient(
                                 colors = listOf(
                                     MaterialTheme.colorScheme.primaryContainer,
-                                    if (speechRecognizer.isRecording) MaterialTheme.colorScheme.errorContainer
+                                    if (isRecording) MaterialTheme.colorScheme.errorContainer
                                     else MaterialTheme.colorScheme.tertiaryContainer
                                 )
                             )
                         ),
-                    onClick = { handleToggleRecording() }
+                    onClick = { onToggleRecording() }
                 ) {
                     Icon(
-                        imageVector = if (speechRecognizer.isRecording) Icons.Outlined.MicOff else Icons.Outlined.Mic,
-                        contentDescription = if (speechRecognizer.isRecording) "Stop Recording" else "Start Recording",
-                        tint = if (speechRecognizer.isRecording) MaterialTheme.colorScheme.onErrorContainer else MaterialTheme.colorScheme.onPrimaryContainer,
+                        imageVector = if (isRecording) Icons.Outlined.MicOff else Icons.Outlined.Mic,
+                        contentDescription = if (isRecording) "Stop Recording" else "Start Recording",
+                        tint = if (isRecording) MaterialTheme.colorScheme.onErrorContainer else MaterialTheme.colorScheme.onPrimaryContainer,
                     )
                 }
 
@@ -169,25 +204,44 @@ fun RecordNewJournalScreen(
                 }
             }
 
-            OutlinedButton(
-                onClick = {
-
-                },
-                shape = RoundedCornerShape(4.dp),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(4.dp)
-            ) {
-                Icon(
-                    imageVector = Icons.Outlined.KeyboardAlt,
-                    contentDescription = "Write Manually"
-                )
-                Spacer(modifier = Modifier.padding(8.dp))
-                Text(
-                    text = "Write Manually Instead",
-                    style = MaterialTheme.typography.bodyLarge,
-                    fontWeight = FontWeight.Bold
-                )
+            Column {
+                if (capturedText.isNotEmpty()){
+                    Button(
+                        onClick = { onSave() },
+                        shape = RoundedCornerShape(4.dp),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                    ) {
+                        Icon(
+                            painter = painterResource(R.drawable.heroicons_sparkles),
+                            contentDescription = "Enhance with AI"
+                        )
+                        Spacer(modifier = Modifier.padding(4.dp))
+                        Text(
+                            text = "Enhance with AI",
+                            style = MaterialTheme.typography.bodyLarge,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
+                    Spacer(modifier = Modifier.padding(4.dp))
+                }
+                OutlinedButton(
+                    onClick = { onCreateManually() },
+                    shape = RoundedCornerShape(4.dp),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                ) {
+                    Icon(
+                        imageVector = Icons.Outlined.KeyboardAlt,
+                        contentDescription = "Write Manually"
+                    )
+                    Spacer(modifier = Modifier.padding(8.dp))
+                    Text(
+                        text = "Create Manually",
+                        style = MaterialTheme.typography.bodyLarge,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
             }
         }
     }
@@ -196,5 +250,13 @@ fun RecordNewJournalScreen(
 @Preview(showBackground = true)
 @Composable
 fun RecordNewJournalScreenPreview() {
-    RecordNewJournalScreen()
+    RecordNewJournalInternal(
+        capturedText = "This is captured text",
+        isRecording = false,
+        isRecordingPermissionGranted = true,
+        isRecordingPermissionPermanentlyDenied = false,
+        onToggleRecording = {},
+        onSave = {},
+        onCreateManually = {}
+    )
 }

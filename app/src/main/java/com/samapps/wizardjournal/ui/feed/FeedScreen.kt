@@ -37,7 +37,7 @@ fun FeedScreen(navController: NavHostController, viewModel: FeedViewModel, modif
     val journals by viewModel.journals.collectAsState(emptyList())
 
     fun handleCreateNewJournal() {
-        navController.navigate(Routes.CreateNewJournal)
+        navController.navigate(Routes.CreateNewJournalByRecording)
     }
 
     Scaffold(

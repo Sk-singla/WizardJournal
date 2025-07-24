@@ -5,21 +5,20 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Call
-import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material.icons.filled.Done
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavHostController
+import com.samapps.wizardjournal.app.Routes
+import com.samapps.wizardjournal.feature_journal.presentation.components.CustomTopAppBar
 import com.samapps.wizardjournal.feature_journal.presentation.journal_editor.JournalEditorViewModel
+import com.samapps.wizardjournal.feature_journal.presentation.journal_editor.components.TransparentTextField
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
@@ -32,57 +31,83 @@ fun ManualJournalEditorScreen(
     val journalTitle by viewModel.journalTitle.collectAsState()
     val journalContent by viewModel.journalContent.collectAsState()
 
+    ManualJournalEditorScreenInternal(
+        modifier = modifier,
+        isEditing = viewModel.isEditing,
+        journalTitle = journalTitle,
+        journalContent = journalContent,
+        onEvent = { event ->
+            viewModel.onManualEditorEvent(event)
+        },
+        onSave = {
+            viewModel.onManualEditorEvent(
+                ManualEditorEvent.Save
+            )
+            navController.popBackStack(
+                route = Routes.JournalHome::class,
+                inclusive = false
+            )
+        }
+    )
+}
+
+@Composable
+private fun ManualJournalEditorScreenInternal(
+    modifier: Modifier = Modifier,
+    isEditing: Boolean,
+    journalTitle: String,
+    journalContent: String,
+    onEvent: (ManualEditorEvent) -> Unit,
+    onSave: () -> Unit,
+) {
+
     Scaffold(
         modifier = modifier,
-        floatingActionButton = {
-            FloatingActionButton(onClick = {
-                viewModel.onManualEditorEvent(
-                    ManualEditorEvent.Save
-                )
-                navController.popBackStack()
-            }) {
-                Icon(
-                    imageVector = Icons.Default.Call,
-                    contentDescription = "Start Recording"
-                )
-            }
-        }
-    ){ paddingValues ->
+        topBar = {
+            CustomTopAppBar(
+                title = if (isEditing) "Edit Journal" else "Create Journal",
+                actions = {
+                    IconButton(
+                        onClick = { onSave() }
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Done,
+                            contentDescription = "Save"
+                        )
+                    }
+                }
+            )
+        },
+    ) { paddingValues ->
         Column(
             modifier = Modifier
                 .padding(paddingValues)
                 .fillMaxSize()
         ) {
-            TextField(
+            TransparentTextField(
                 value = journalTitle,
-                onValueChange = { viewModel.onManualEditorEvent(ManualEditorEvent.TitleChanged(it)) },
-                placeholder = { Text("Title", style = MaterialTheme.typography.headlineSmall) },
-                colors = TextFieldDefaults.colors(
-                    focusedContainerColor = Color.Transparent,
-                    unfocusedContainerColor = Color.Transparent,
-                    disabledContainerColor = Color.Transparent,
-                    focusedIndicatorColor = Color.Transparent,
-                    unfocusedIndicatorColor = Color.Transparent,
-                    disabledIndicatorColor = Color.Transparent
-                ),
-                textStyle = MaterialTheme.typography.headlineSmall,
+                onValueChange = { onEvent(ManualEditorEvent.TitleChanged(it)) },
+                placeholder = "Title",
                 modifier = Modifier.fillMaxWidth()
             )
-            TextField(
+            TransparentTextField(
                 value = journalContent,
-                onValueChange = { viewModel.onManualEditorEvent(ManualEditorEvent.ContentChanged(it)) },
-                placeholder = { Text("Journal", style = MaterialTheme.typography.bodyLarge) },
-                colors = TextFieldDefaults.colors(
-                    focusedContainerColor = Color.Transparent,
-                    unfocusedContainerColor = Color.Transparent,
-                    disabledContainerColor = Color.Transparent,
-                    focusedIndicatorColor = Color.Transparent,
-                    unfocusedIndicatorColor = Color.Transparent,
-                    disabledIndicatorColor = Color.Transparent
-                ),
-                textStyle = MaterialTheme.typography.bodyLarge,
+                onValueChange = { onEvent(ManualEditorEvent.ContentChanged(it)) },
+                placeholder = "Journal",
                 modifier = Modifier.fillMaxSize()
             )
         }
     }
+}
+
+@Preview
+@Composable
+fun ManualJournalEditorScreenPreview() {
+    ManualJournalEditorScreenInternal(
+        isEditing = false,
+        journalTitle = "Title",
+        journalContent = "Content",
+        onEvent = {},
+        onSave = {}
+    )
 }
