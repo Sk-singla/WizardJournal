@@ -1,13 +1,38 @@
 package com.samapps.wizardjournal.feature_journal.domain.model
 
-sealed class JournalTheme {
-    data object None : JournalTheme()
-    data object HarryPotter : JournalTheme()
-    data object FantasyAdventure : JournalTheme()
-    data object SciFiSaga : JournalTheme()
-    data object NoirMystery : JournalTheme()
-    data object EverydayLife : JournalTheme()
-    data class Custom(val name: String) : JournalTheme()
+sealed class JournalTheme(
+    val displayName: String,
+    val description: String
+) {
+
+    data object None : JournalTheme(
+        displayName = "None",
+        description = "No theme"
+    )
+    data object HarryPotter : JournalTheme(
+        displayName = "Harry Potter",
+        description = "Magical wizarding world adventure"
+    )
+    data object FantasyAdventure : JournalTheme(
+        displayName = "Fantasy Adventure",
+        description = "Epic quests and mythical creatures"
+    )
+    data object SciFiSaga : JournalTheme(
+        displayName = "Sci-Fi Saga",
+        description = "Futuristic space adventures"
+    )
+    data object NoirMystery : JournalTheme(
+        displayName = "Noir Mystery",
+        description = "Dark and eerie suspense"
+    )
+    data object EverydayLife : JournalTheme(
+        displayName = "Everyday Life",
+        description = "Real-world personal stories"
+    )
+    data class Custom(val name: String) : JournalTheme(
+        displayName = "Custom",
+        description = "Custom theme"
+    )
 
     // Helper to convert to a DB string representation
     fun toDBString(): String = when (this) {

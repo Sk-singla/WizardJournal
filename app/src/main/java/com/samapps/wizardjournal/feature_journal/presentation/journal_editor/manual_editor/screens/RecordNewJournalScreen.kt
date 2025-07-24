@@ -1,7 +1,6 @@
-package com.samapps.wizardjournal.feature_journal.presentation.journal_editor.manual_editor
+package com.samapps.wizardjournal.feature_journal.presentation.journal_editor.manual_editor.screens
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
@@ -9,7 +8,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
@@ -46,6 +44,8 @@ import com.samapps.wizardjournal.R
 import com.samapps.wizardjournal.app.Routes
 import com.samapps.wizardjournal.app.utils.rememberSpeechRecognizer
 import com.samapps.wizardjournal.feature_journal.presentation.journal_editor.JournalEditorViewModel
+import com.samapps.wizardjournal.feature_journal.presentation.journal_editor.components.JournalContentPreview
+import com.samapps.wizardjournal.feature_journal.presentation.journal_editor.manual_editor.events.RecordNewJournalEvent
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 
@@ -106,7 +106,7 @@ private fun RecordNewJournalInternal(
     onToggleRecording: () -> Unit,
     onCreateManually: () -> Unit,
     onSave: () -> Unit
-){
+) {
     Scaffold(
         modifier = modifier,
     ) { paddingValues ->
@@ -169,43 +169,16 @@ private fun RecordNewJournalInternal(
                 if (capturedText.isNotEmpty()) {
                     Spacer(modifier = Modifier.padding(24.dp))
 
-                    Column(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .heightIn(max = 200.dp)
-                            .height(IntrinsicSize.Min)
-                            .background(
-                                MaterialTheme.colorScheme.surfaceVariant,
-                                RoundedCornerShape(4.dp)
-                            )
-                            .border(
-                                1.dp,
-                                MaterialTheme.colorScheme.outline,
-                                RoundedCornerShape(4.dp)
-                            )
-                            .padding(16.dp),
-                        horizontalAlignment = Alignment.Start
-                    ) {
-                        Text(
-                            text = "Captured so far:",
-                            color = MaterialTheme.colorScheme.primary,
-                            fontWeight = FontWeight.Bold
-                        )
-                        Spacer(modifier = Modifier.padding(8.dp))
-                        Text(
-                            text = capturedText,
-                            modifier = Modifier
-                                .weight(1f)
-                                .verticalScroll(rememberScrollState()),
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-                    }
+                    JournalContentPreview(
+                        previewTitle = "Captured so far:",
+                        content = capturedText,
+                        modifier = Modifier.fillMaxWidth()
+                    )
                 }
             }
 
             Column {
-                if (capturedText.isNotEmpty()){
+                if (capturedText.isNotEmpty()) {
                     Button(
                         onClick = { onSave() },
                         shape = RoundedCornerShape(4.dp),

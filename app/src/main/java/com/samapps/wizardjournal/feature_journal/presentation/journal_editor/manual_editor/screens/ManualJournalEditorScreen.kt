@@ -1,4 +1,4 @@
-package com.samapps.wizardjournal.feature_journal.presentation.journal_editor.manual_editor
+package com.samapps.wizardjournal.feature_journal.presentation.journal_editor.manual_editor.screens
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -19,6 +19,7 @@ import com.samapps.wizardjournal.app.Routes
 import com.samapps.wizardjournal.feature_journal.presentation.components.CustomTopAppBar
 import com.samapps.wizardjournal.feature_journal.presentation.journal_editor.JournalEditorViewModel
 import com.samapps.wizardjournal.feature_journal.presentation.journal_editor.components.TransparentTextField
+import com.samapps.wizardjournal.feature_journal.presentation.journal_editor.manual_editor.events.ManualEditorEvent
 import org.koin.androidx.compose.koinViewModel
 
 @Composable

@@ -12,8 +12,8 @@ enum class BackgroundType {
 @Serializable
 data class BackgroundInfo(
     val type: BackgroundType,
-    val primaryColor: String, // Hex code like "#RRGGBB"
-    val secondaryColor: String?, // Hex code, for gradients, null otherwise
+    val primaryColor: ULong?, // Hex value for the primary color, null for auto
+    val secondaryColor: ULong?, // Hex value for the secondary color if gradient colors, null if not applicable
     val patternKey: String?, // Keyword for predefined patterns (e.g., "stars", "waves"), null otherwise
     val gradientAngle: Float? // For linear gradients, in degrees, null otherwise
 )
