@@ -20,5 +20,8 @@ sealed interface Routes {
     data object CreateNewJournalThemeSelection: Routes
 
     @Serializable
+    data class ViewJournal(val journalId: Int): Routes
+
+    @Serializable
     data class EditJournal(val journalId: Int): Routes
 }

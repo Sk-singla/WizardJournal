@@ -30,8 +30,8 @@ class FeedViewModel(
                 audioFilePath = null,
                 backgroundInfo = BackgroundInfo(
                     type = BackgroundType.SOLID_COLOR,
-                    primaryColor = "red",
-                    secondaryColor = "blue",
+                    primaryColor = null,
+                    secondaryColor = null,
                     patternKey = null,
                     gradientAngle = null
                 )
@@ -58,8 +58,8 @@ class FeedViewModel(
                 audioFilePath = null,
                 backgroundInfo = BackgroundInfo(
                     type = BackgroundType.SOLID_COLOR,
-                    primaryColor = "red",
-                    secondaryColor = "blue",
+                    primaryColor = null,
+                    secondaryColor = null,
                     patternKey = null,
                     gradientAngle = null
                 )

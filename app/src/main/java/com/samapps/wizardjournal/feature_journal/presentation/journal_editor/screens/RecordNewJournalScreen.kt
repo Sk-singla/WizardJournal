@@ -1,4 +1,4 @@
-package com.samapps.wizardjournal.feature_journal.presentation.journal_editor.manual_editor.screens
+package com.samapps.wizardjournal.feature_journal.presentation.journal_editor.screens
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -34,8 +34,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.material.icons.outlined.Mic
 import androidx.compose.material.icons.outlined.MicOff
 import androidx.compose.material3.Button
+import androidx.compose.material3.SnackbarHost
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.material3.SnackbarHostState
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.res.painterResource
@@ -45,7 +47,7 @@ import com.samapps.wizardjournal.app.Routes
 import com.samapps.wizardjournal.app.utils.rememberSpeechRecognizer
 import com.samapps.wizardjournal.feature_journal.presentation.journal_editor.JournalEditorViewModel
 import com.samapps.wizardjournal.feature_journal.presentation.journal_editor.components.JournalContentPreview
-import com.samapps.wizardjournal.feature_journal.presentation.journal_editor.manual_editor.events.RecordNewJournalEvent
+import com.samapps.wizardjournal.feature_journal.presentation.journal_editor.events.RecordNewJournalEvent
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 
@@ -80,8 +82,13 @@ fun RecordNewJournalScreen(
         }
     }
 
+    LaunchedEffect(key1 = true) {
+        viewModel.clearStatesOnJournalUpdate()
+    }
+
     RecordNewJournalInternal(
         modifier = modifier,
+        snackbarHostState = snackbarHostState,
         capturedText = capturedText,
         isRecording = speechRecognizer.isRecording,
         isRecordingPermissionGranted = recordAudioPermissionState.isGranted,
@@ -99,6 +106,7 @@ fun RecordNewJournalScreen(
 @Composable
 private fun RecordNewJournalInternal(
     modifier: Modifier = Modifier,
+    snackbarHostState: SnackbarHostState,
     capturedText: String,
     isRecording: Boolean,
     isRecordingPermissionGranted: Boolean,
@@ -109,6 +117,7 @@ private fun RecordNewJournalInternal(
 ) {
     Scaffold(
         modifier = modifier,
+        snackbarHost = { SnackbarHost(snackbarHostState) }
     ) { paddingValues ->
         Column(
             modifier = Modifier
@@ -230,6 +239,7 @@ fun RecordNewJournalScreenPreview() {
         isRecordingPermissionPermanentlyDenied = false,
         onToggleRecording = {},
         onSave = {},
-        onCreateManually = {}
+        onCreateManually = {},
+        snackbarHostState = remember { SnackbarHostState() }
     )
 }

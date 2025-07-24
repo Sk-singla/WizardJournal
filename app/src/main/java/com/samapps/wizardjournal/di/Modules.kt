@@ -9,6 +9,7 @@ import com.samapps.wizardjournal.feature_journal.domain.use_case.DeleteJournalUs
 import com.samapps.wizardjournal.feature_journal.domain.use_case.GetJournalByIdUseCase
 import com.samapps.wizardjournal.feature_journal.domain.use_case.GetJournalsUseCase
 import com.samapps.wizardjournal.feature_journal.domain.use_case.JournalUseCases
+import com.samapps.wizardjournal.feature_journal.presentation.journal_details.JournalDetailsViewModel
 import com.samapps.wizardjournal.feature_journal.presentation.journal_editor.JournalEditorViewModel
 import com.samapps.wizardjournal.feature_journal.presentation.journal_home.JournalHomeViewModel
 import com.samapps.wizardjournal.ui.feed.FeedViewModel
@@ -43,4 +44,7 @@ val appModule = module {
     }
     viewModelOf(::JournalHomeViewModel)
     viewModelOf(::JournalEditorViewModel)
+    viewModel { (journalId: Int) ->
+        JournalDetailsViewModel(get(), journalId)
+    }
 }

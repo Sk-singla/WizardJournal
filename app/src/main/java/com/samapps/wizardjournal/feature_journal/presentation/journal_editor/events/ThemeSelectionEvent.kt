@@ -1,4 +1,4 @@
-package com.samapps.wizardjournal.feature_journal.presentation.journal_editor.manual_editor.events
+package com.samapps.wizardjournal.feature_journal.presentation.journal_editor.events
 
 import com.samapps.wizardjournal.feature_journal.domain.model.JournalTheme
 

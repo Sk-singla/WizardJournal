@@ -22,10 +22,12 @@ import androidx.navigation.compose.navigation
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
 import com.samapps.wizardjournal.app.Routes
+import com.samapps.wizardjournal.feature_journal.presentation.journal_details.JournalDetails
+import com.samapps.wizardjournal.feature_journal.presentation.journal_details.JournalDetailsViewModel
 import com.samapps.wizardjournal.feature_journal.presentation.journal_editor.JournalEditorViewModel
-import com.samapps.wizardjournal.feature_journal.presentation.journal_editor.manual_editor.screens.ManualJournalEditorScreen
-import com.samapps.wizardjournal.feature_journal.presentation.journal_editor.manual_editor.screens.RecordNewJournalScreen
-import com.samapps.wizardjournal.feature_journal.presentation.journal_editor.manual_editor.screens.ThemeSelectionScreen
+import com.samapps.wizardjournal.feature_journal.presentation.journal_editor.screens.ManualJournalEditorScreen
+import com.samapps.wizardjournal.feature_journal.presentation.journal_editor.screens.RecordNewJournalScreen
+import com.samapps.wizardjournal.feature_journal.presentation.journal_editor.screens.ThemeSelectionScreen
 import com.samapps.wizardjournal.feature_journal.presentation.journal_home.JournalHomeScreen
 import com.samapps.wizardjournal.ui.feed.FeedViewModel
 import com.samapps.wizardjournal.ui.theme.WizardJournalTheme
@@ -33,6 +35,7 @@ import com.samapps.wizardjournal.ui.wip_journal.WipJournal
 import com.samapps.wizardjournal.ui.wip_journal.WipJournalViewModel
 import org.koin.androidx.compose.koinViewModel
 import org.koin.androidx.viewmodel.ext.android.getViewModel
+import org.koin.core.parameter.parametersOf
 
 class MainActivity : ComponentActivity() {
 
@@ -82,24 +85,28 @@ class MainActivity : ComponentActivity() {
                 editorViewModel.setJournalIdToEdit(null)
 
                 ThemeSelectionScreen(
-                  viewModel = editorViewModel
+                  viewModel = editorViewModel,
+                  navController = navController
                 )
               }
+
+              composable<Routes.ViewJournal> {
+                val args = it.toRoute<Routes.ViewJournal>()
+                val viewModel = koinViewModel<JournalDetailsViewModel>{ parametersOf(args.journalId) }
+                JournalDetails(
+                  navController = navController,
+                  viewModel = viewModel
+                )
+              }
+
               composable<Routes.EditJournal> {
                 val args = it.toRoute<Routes.EditJournal>()
-                WipJournal(
-                  viewModel = viewModel(factory = object : ViewModelProvider.Factory {
-                    override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                      return WipJournalViewModel(
-                        journal = journals.find { it.id == args.journalId }
-                      ) as T
-                    }
-                  }
-                  ),
+                val editorViewModel = it.sharedKoinViewModel<JournalEditorViewModel>(navController)
+                editorViewModel.setJournalIdToEdit(args.journalId)
+
+                ManualJournalEditorScreen(
                   navController = navController,
-                  saveJournal = { title, content ->
-                    feedViewModel.editJournal(args.journalId, title, content)
-                  }
+                  viewModel = editorViewModel
                 )
               }
             }

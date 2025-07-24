@@ -44,8 +44,8 @@ fun JournalHomeScreen(
         navController.navigate(Routes.CreateNewJournalByRecording)
     }
 
-    fun handleEditJournal() {
-        println("Journal card clicked")
+    fun handleEditJournal(journalId: Int) {
+        navController.navigate(Routes.ViewJournal(journalId))
     }
 
     if (state.value.journals.isEmpty()) {
@@ -57,7 +57,7 @@ fun JournalHomeScreen(
         JournalsListScreen(
             modifier = modifier,
             journals = state.value.journals,
-            onJournalClick = { handleEditJournal() },
+            onJournalClick = { handleEditJournal(it.id) },
             onCreateNewJournal = { handleCreateNewJournal() }
         )
     }

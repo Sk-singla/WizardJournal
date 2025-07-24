@@ -7,6 +7,8 @@ import com.samapps.wizardjournal.feature_journal.domain.repository.JournalReposi
 class CreateJournalUseCase(
     private val repository: JournalRepository
 ) {
+
+    @Throws(InvalidJournalException::class)
     suspend operator fun invoke(journal: JournalEntity) {
         if(journal.title.isBlank()) {
             throw InvalidJournalException("The title of the journal can't be empty.")

@@ -23,7 +23,8 @@ fun CustomTopAppBar(
         ),
         title = {
             Text(
-                text = title
+                text = title,
+                color = MaterialTheme.colorScheme.onPrimary
             )
         },
         actions = actions,

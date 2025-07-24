@@ -1,4 +1,4 @@
-package com.samapps.wizardjournal.feature_journal.presentation.journal_editor.manual_editor.events
+package com.samapps.wizardjournal.feature_journal.presentation.journal_editor.events
 
 sealed class ManualEditorEvent {
     data class TitleChanged(val title: String) : ManualEditorEvent()
