@@ -13,6 +13,10 @@ Wizournal transforms your daily thoughts into enchanting, AI-enhanced stories di
 * **Voice Input:** Speak your journals using **Android's native speech-to-text**.
 * **Permissions:** Handles **recording permissions** securely and smoothly.
 
+## Architecture
+
+The app is built following **Clean Architecture principles**, with a presentation layer utilizing **MVVM (Model-View-ViewModel)** and **Unidirectional Data Flow (UDF)** for robust, scalable, and testable UI development.
+
 ## Tech Stack
 
 * **Jetpack Compose:** Modern Android UI.

@@ -7,13 +7,9 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -29,10 +25,7 @@ import com.samapps.wizardjournal.feature_journal.presentation.journal_editor.scr
 import com.samapps.wizardjournal.feature_journal.presentation.journal_editor.screens.RecordNewJournalScreen
 import com.samapps.wizardjournal.feature_journal.presentation.journal_editor.screens.ThemeSelectionScreen
 import com.samapps.wizardjournal.feature_journal.presentation.journal_home.JournalHomeScreen
-import com.samapps.wizardjournal.ui.feed.FeedViewModel
 import com.samapps.wizardjournal.ui.theme.WizardJournalTheme
-import com.samapps.wizardjournal.ui.wip_journal.WipJournal
-import com.samapps.wizardjournal.ui.wip_journal.WipJournalViewModel
 import org.koin.androidx.compose.koinViewModel
 import org.koin.androidx.viewmodel.ext.android.getViewModel
 import org.koin.core.parameter.parametersOf
@@ -49,9 +42,6 @@ class MainActivity : ComponentActivity() {
         ) {
 
           val navController = rememberNavController()
-          var feedViewModel = getViewModel<FeedViewModel>()
-          val journals by feedViewModel.journals.collectAsState(emptyList())
-
 
           NavHost(
             navController = navController,

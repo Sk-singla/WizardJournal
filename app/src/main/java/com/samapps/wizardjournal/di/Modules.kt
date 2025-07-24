@@ -12,7 +12,6 @@ import com.samapps.wizardjournal.feature_journal.domain.use_case.JournalUseCases
 import com.samapps.wizardjournal.feature_journal.presentation.journal_details.JournalDetailsViewModel
 import com.samapps.wizardjournal.feature_journal.presentation.journal_editor.JournalEditorViewModel
 import com.samapps.wizardjournal.feature_journal.presentation.journal_home.JournalHomeViewModel
-import com.samapps.wizardjournal.ui.feed.FeedViewModel
 import org.koin.core.module.dsl.viewModel
 import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.module
@@ -38,9 +37,6 @@ val appModule = module {
             createJournal = CreateJournalUseCase(get()),
             getJournalById = GetJournalByIdUseCase(get())
         )
-    }
-    viewModel {
-        FeedViewModel(get())
     }
     viewModelOf(::JournalHomeViewModel)
     viewModelOf(::JournalEditorViewModel)
