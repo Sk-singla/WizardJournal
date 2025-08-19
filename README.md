@@ -12,6 +12,7 @@ Wizournal transforms your daily thoughts into enchanting, AI-enhanced stories di
 * **Dynamic Visuals:** AI generates unique backgrounds (colors, gradients, patterns) for each journal, matching its story and theme.
 * **Voice Input:** Speak your journals using **Android's native speech-to-text**.
 * **Permissions:** Handles **recording permissions** securely and smoothly.
+* **Jwt Authentication:** Authenticate user using jwt with spring boot backend: https://github.com/Sk-singla/wizard_journal_backend
 
 ## Architecture
 
