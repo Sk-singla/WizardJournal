@@ -5,6 +5,10 @@ import android.net.Uri
 import android.provider.Settings
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.PermissionStatus
@@ -48,10 +52,12 @@ fun rememberPermissionHandler(
     permissionState: PermissionState,
     context: android.content.Context
 ): PermissionHandler {
+    var askedForPermissions by remember { mutableStateOf(false) }
+    println("Asked for permissions: $askedForPermissions")
     return PermissionHandler(
         isGranted = permissionState.status == PermissionStatus.Granted,
-        isPermanentlyDenied = permissionState.status is PermissionStatus.Denied && !(permissionState.status as PermissionStatus.Denied).shouldShowRationale,
-        requestPermission = { permissionState.launchPermissionRequest() },
+        isPermanentlyDenied = askedForPermissions && permissionState.status is PermissionStatus.Denied && !(permissionState.status as PermissionStatus.Denied).shouldShowRationale,
+        requestPermission = { askedForPermissions = true; permissionState.launchPermissionRequest() },
         openAppSettings = {
             val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
                 data = Uri.fromParts("package", context.packageName, null)
