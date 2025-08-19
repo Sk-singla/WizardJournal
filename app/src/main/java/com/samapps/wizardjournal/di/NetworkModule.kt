@@ -3,6 +3,7 @@ package com.samapps.wizardjournal.di
 import com.samapps.wizardjournal.feature_auth.data.datasource.remote.AuthApiService
 import com.samapps.wizardjournal.feature_auth.data.datasource.remote.TokenAuthenticator // Updated import
 import com.samapps.wizardjournal.feature_auth.utils.AuthInterceptor
+import com.samapps.wizardjournal.feature_journal.data.data_source.remote.JournalApiService // Added import
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import org.koin.dsl.module
@@ -36,6 +37,10 @@ val networkModule = module {
     }
     single<AuthApiService> {
         get<Retrofit>().create(AuthApiService::class.java)
+    }
+
+    single<JournalApiService> { // Added JournalApiService provider
+        get<Retrofit>().create(JournalApiService::class.java)
     }
 
     single { AuthInterceptor(get()) }

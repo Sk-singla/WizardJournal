@@ -1,6 +1,6 @@
 package com.samapps.wizardjournal.feature_journal.domain.model
 
-sealed class JournalTheme(
+open class JournalTheme(
     val displayName: String,
     val description: String
 ) {
@@ -42,7 +42,7 @@ sealed class JournalTheme(
         SciFiSaga -> "SciFiSaga"
         NoirMystery -> "NoirMystery"
         EverydayLife -> "EverydayLife"
-        is Custom -> "Custom:${this.name}"
+        else -> "Custom:${this.displayName}"
     }
 
     companion object {

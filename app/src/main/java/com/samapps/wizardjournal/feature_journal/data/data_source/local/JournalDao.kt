@@ -1,7 +1,6 @@
-package com.samapps.wizardjournal.feature_journal.data.data_source
+package com.samapps.wizardjournal.feature_journal.data.data_source.local
 
 import androidx.room.Dao
-import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
@@ -22,4 +21,7 @@ interface JournalDao {
 
     @Query("DELETE FROM journals WHERE id = :id")
     suspend fun deleteJournalById(id: Int)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertManyJournals(journals: List<JournalEntity>)
 }

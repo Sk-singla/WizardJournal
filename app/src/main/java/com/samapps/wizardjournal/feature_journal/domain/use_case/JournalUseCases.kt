@@ -4,5 +4,7 @@ data class JournalUseCases(
     val getJournals: GetJournalsUseCase,
     val deleteJournal: DeleteJournalUseCase,
     val createJournal: CreateJournalUseCase,
-    val getJournalById: GetJournalByIdUseCase
+    val getJournalById: GetJournalByIdUseCase,
+    val initJournals: InitJournalsUseCase,
+    val generateJournal: GenerateJournalUseCase,
 )

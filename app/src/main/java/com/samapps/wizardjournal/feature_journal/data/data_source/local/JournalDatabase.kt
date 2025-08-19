@@ -1,4 +1,4 @@
-package com.samapps.wizardjournal.feature_journal.data.data_source
+package com.samapps.wizardjournal.feature_journal.data.data_source.local
 
 import androidx.room.Database
 import androidx.room.RoomDatabase

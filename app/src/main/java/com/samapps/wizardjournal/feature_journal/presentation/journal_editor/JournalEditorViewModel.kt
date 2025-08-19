@@ -102,9 +102,6 @@ class JournalEditorViewModel(
                                     title = _journalTitle.value,
                                     content = _journalContent.value,
                                     modifiedTimestamp = System.currentTimeMillis(),
-                                    backgroundInfo = BackgroundInfo(
-                                        BackgroundType.SOLID_COLOR
-                                    )
                                 )
                             )
                         }
@@ -229,37 +226,36 @@ class JournalEditorViewModel(
             is ThemeSelectionEvent.GenerateJournal -> {
                 viewModelScope.launch {
                     _isGenerating.value = true
-                    val result = generateJournal(
+//                    val result = generateJournal(
+//                        userInput = _journalContent.value,
+//                        theme = _journalTheme.value
+//                    )
+//                    result.fold(
+//                        onSuccess = { aiResponse ->
+//                            journalUseCases.generateJournal(
+//                                userInput = _journalContent.value,
+//                                theme = _journalTheme.value
+//                            )
+//                            clearStatesOnJournalUpdate()
+//                            _themeSelectionEvents.emit(ThemeSelectionScreenUiEvent.JournalSaved)
+//                            _isGenerating.value = false
+//                        },
+//                        onFailure = { exception ->
+//                            _themeSelectionEvents.emit(
+//                                ThemeSelectionScreenUiEvent.ShowSnackbar(
+//                                    message = exception.message ?: "Unknown error"
+//                                )
+//                            )
+//                            _isGenerating.value = false
+//                        }
+//                    )
+                    journalUseCases.generateJournal(
                         userInput = _journalContent.value,
                         theme = _journalTheme.value
                     )
-                    result.fold(
-                        onSuccess = { aiResponse ->
-                            journalUseCases.createJournal(
-                                JournalEntity(
-                                    title = aiResponse.title,
-                                    content = aiResponse.content,
-                                    date = System.currentTimeMillis(),
-                                    modifiedTimestamp = System.currentTimeMillis(),
-                                    theme = _journalTheme.value,
-                                    aiPromptUsed = _journalContent.value,
-                                    audioFilePath = null,
-                                    backgroundInfo = aiResponse.backgroundInfo
-                                )
-                            )
-                            clearStatesOnJournalUpdate()
-                            _themeSelectionEvents.emit(ThemeSelectionScreenUiEvent.JournalSaved)
-                            _isGenerating.value = false
-                        },
-                        onFailure = { exception ->
-                            _themeSelectionEvents.emit(
-                                ThemeSelectionScreenUiEvent.ShowSnackbar(
-                                    message = exception.message ?: "Unknown error"
-                                )
-                            )
-                            _isGenerating.value = false
-                        }
-                    )
+                    clearStatesOnJournalUpdate()
+                    _themeSelectionEvents.emit(ThemeSelectionScreenUiEvent.JournalSaved)
+                    _isGenerating.value = false
                 }
             }
         }

@@ -23,6 +23,17 @@ class JournalHomeViewModel(private val journalUseCases: JournalUseCases): ViewMo
     private var getJournalsJob: Job? = null
 
     init {
+        // Initialize journals from the API first
+        viewModelScope.launch {
+            try {
+                journalUseCases.initJournals()
+                // Optionally, you can emit an event or log success
+            } catch (e: Exception) {
+                // Handle error, e.g., show a snackbar or log
+                _eventFlow.emit(UiEvent.ShowSnackbar("Error initializing journals: ${e.localizedMessage}"))
+            }
+        }
+        // Then, start observing local journals
         getJournals()
     }
 

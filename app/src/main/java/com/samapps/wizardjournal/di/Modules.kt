@@ -10,13 +10,16 @@ import com.samapps.wizardjournal.feature_auth.domain.use_case.LoginUseCase
 import com.samapps.wizardjournal.feature_auth.domain.use_case.SignupUseCase
 import com.samapps.wizardjournal.feature_auth.presentation.login.LoginViewModel
 import com.samapps.wizardjournal.feature_auth.presentation.signup.SignupViewModel
-import com.samapps.wizardjournal.feature_journal.data.data_source.JournalDatabase
+import com.samapps.wizardjournal.feature_journal.data.data_source.local.JournalDatabase
+import com.samapps.wizardjournal.feature_journal.data.data_source.remote.JournalApiService
 import com.samapps.wizardjournal.feature_journal.data.repository.JournalRepositoryImpl
 import com.samapps.wizardjournal.feature_journal.domain.repository.JournalRepository
 import com.samapps.wizardjournal.feature_journal.domain.use_case.CreateJournalUseCase
 import com.samapps.wizardjournal.feature_journal.domain.use_case.DeleteJournalUseCase
+import com.samapps.wizardjournal.feature_journal.domain.use_case.GenerateJournalUseCase
 import com.samapps.wizardjournal.feature_journal.domain.use_case.GetJournalByIdUseCase
 import com.samapps.wizardjournal.feature_journal.domain.use_case.GetJournalsUseCase
+import com.samapps.wizardjournal.feature_journal.domain.use_case.InitJournalsUseCase // Added import
 import com.samapps.wizardjournal.feature_journal.domain.use_case.JournalUseCases
 import com.samapps.wizardjournal.feature_journal.presentation.journal_details.JournalDetailsViewModel
 import com.samapps.wizardjournal.feature_journal.presentation.journal_editor.JournalEditorViewModel
@@ -37,14 +40,16 @@ val appModule = module {
         get<JournalDatabase>().journalDao
     }
     single<JournalRepository> {
-        JournalRepositoryImpl(get())
+        JournalRepositoryImpl(get(), get<JournalApiService>())
     }
     single {
         JournalUseCases(
             getJournals = GetJournalsUseCase(get()),
             deleteJournal = DeleteJournalUseCase(get()),
             createJournal = CreateJournalUseCase(get()),
-            getJournalById = GetJournalByIdUseCase(get())
+            getJournalById = GetJournalByIdUseCase(get()),
+            initJournals = InitJournalsUseCase(get()),
+            generateJournal = GenerateJournalUseCase(get())
         )
     }
 
@@ -69,3 +74,4 @@ val appModule = module {
     viewModelOf(::LoginViewModel)
     viewModelOf(::SignupViewModel)
 }
+
