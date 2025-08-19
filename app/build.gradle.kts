@@ -76,4 +76,9 @@ dependencies {
 
     implementation(libs.material.extended.icons)
     implementation(libs.accompanist.permissions)
+
+    implementation(libs.retrofit)
+    implementation(libs.retrofit.converter.gson)
+    implementation(libs.datastore)
+    implementation(libs.logging.interceptor)
 }

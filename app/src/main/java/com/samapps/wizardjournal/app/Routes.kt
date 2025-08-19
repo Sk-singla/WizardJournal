@@ -24,4 +24,10 @@ sealed interface Routes {
 
     @Serializable
     data class EditJournal(val journalId: Int): Routes
+
+    @Serializable
+    data object Login: Routes
+
+    @Serializable
+    data object Signup: Routes
 }

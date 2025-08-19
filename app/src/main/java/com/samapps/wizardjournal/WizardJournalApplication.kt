@@ -2,6 +2,7 @@ package com.samapps.wizardjournal
 
 import android.app.Application
 import com.samapps.wizardjournal.di.appModule
+import com.samapps.wizardjournal.di.networkModule
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.context.startKoin
 
@@ -11,7 +12,7 @@ class WizardJournalApplication: Application() {
         super.onCreate()
         startKoin {
             androidContext(this@WizardJournalApplication)
-            modules(appModule)
+            modules(appModule, networkModule)
         }
     }
 }
