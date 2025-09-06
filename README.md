@@ -3,6 +3,8 @@
 ## Web APP: https://wizournal.vercel.app
 
 Wizournal transforms your daily thoughts into enchanting, AI-enhanced stories directly on your Android device.
+Web app repo: https://github.com/Sk-singla/wizournal-web-app
+Backend: https://github.com/Sk-singla/wizard_journal_backend
 
 ## Key Features
 
