@@ -1,5 +1,7 @@
 # Wizournal: Your AI-Powered Magical Journal ✨
 
+## Web APP: https://wizournal.vercel.app
+
 Wizournal transforms your daily thoughts into enchanting, AI-enhanced stories directly on your Android device.
 
 ## Key Features
